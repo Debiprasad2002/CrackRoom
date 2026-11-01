@@ -1,0 +1,35 @@
+# Render Blueprint for the CrackRoom API (free plan).
+# Database: Supabase Postgres via DATABASE_URL. Files: Cloudflare R2.
+services:
+  - type: web
+    name: crackroom-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: bash build.sh
+    # One ASGI process serves HTTP and the room WebSockets. With the in-memory channel layer it
+    # must stay one process; add REDIS_URL before scaling out.
+    startCommand: daphne --bind 0.0.0.0 --port $PORT --proxy-headers config.asgi:application
+    healthCheckPath: /api/health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        value: 115708159411-q1lpeqtjehsfkbtpe3i6jtfog9p7qrdi.apps.googleusercontent.com
+      - key: DATABASE_URL
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false

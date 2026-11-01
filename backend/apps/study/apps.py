@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class StudyConfig(AppConfig):
+    name = 'apps.study'
+    label = 'study'
+    verbose_name = 'Focus and planner'

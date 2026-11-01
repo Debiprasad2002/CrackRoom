@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Swipe rows scroll sideways inside themselves; clipping stops phones from zooming the
+     whole page out to fit them. `clip` (unlike `hidden`) keeps sticky headers working. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  html {
+    @apply bg-ink-900 text-fg antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply min-h-dvh bg-ink-900 font-sans text-[15px] leading-relaxed;
+  }
+
+  ::selection {
+    @apply bg-violet-500/20 text-fg;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-violet-400 ring-offset-2 ring-offset-ink-900;
+  }
+
+  h1, h2, h3 {
+    @apply font-display tracking-tight text-fg;
+    text-wrap: balance;
+  }
+
+  input[type='number']::-webkit-inner-spin-button {
+    @apply opacity-40;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #c9d0de transparent;
+  }
+
+  dialog::backdrop {
+    background: rgb(20 26 46 / 0.35);
+    backdrop-filter: blur(4px);
+  }
+
+  dialog[open] {
+    animation: dialog-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes dialog-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  }
+
+  /* Phones open dialogs as bottom sheets, so they slide up from the edge. */
+  @media (max-width: 639px) {
+    dialog[open] {
+      animation: sheet-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+  }
+
+  @keyframes sheet-in {
+    from { transform: translateY(100%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .surface {
+    @apply rounded-2xl border border-line bg-ink-800 shadow-card;
+  }
+
+  .eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.12em] text-fg-subtle;
+  }
+
+  /* Horizontal swipe rows: scroll by touch, no visible scrollbar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum', 'cv11';
+  }
+}

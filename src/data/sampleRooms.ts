@@ -1,0 +1,86 @@
+import type { Room } from '@/types';
+
+// Sample catalogue used until the Django API is connected.
+// Deliberately carries no participant counts or live status.
+export const SAMPLE_ROOMS: Room[] = [
+  {
+    id: 'rotational-motion-sprint',
+    name: 'Rotational Motion Sprint',
+    description: 'Torque, moment of inertia and rolling — one chapter, fully closed by the end of the week.',
+    exam: 'JEE', level: 'class11', subject: 'physics', mode: 'pomodoro', visibility: 'public',
+    host: 'Ishaan R.', focusMinutes: 50, breakMinutes: 10, capacity: 24,
+    rules: ['Mics off during focus blocks', 'Share doubts only in breaks', 'Be kind'],
+  },
+  {
+    id: 'organic-at-dawn',
+    name: 'Organic at Dawn',
+    description: 'Early-morning GOC and reaction mechanisms before school. Quiet, steady, consistent.',
+    exam: 'both', level: 'class12', subject: 'chemistry', mode: 'silent', visibility: 'public',
+    host: 'Meera K.', focusMinutes: 45, breakMinutes: 5, capacity: 40,
+    rules: ['Silent during focus', 'Arrive on time for the first block'],
+  },
+  {
+    id: 'calculus-deep-work',
+    name: 'Calculus Deep Work',
+    description: 'Long blocks for integration and differential equations. Bring a problem set.',
+    exam: 'JEE', level: 'dropper', subject: 'mathematics', mode: 'pomodoro', visibility: 'public',
+    host: 'Aditya V.', focusMinutes: 60, breakMinutes: 10, capacity: 20,
+    rules: ['Phones face down', 'Post your target at the start'],
+  },
+  {
+    id: 'neet-bio-ncert-line-by-line',
+    name: 'NCERT Biology, Line by Line',
+    description: 'Reading NCERT Biology carefully together, then quick recall rounds in each break.',
+    exam: 'NEET', level: 'all', subject: 'biology', mode: 'revision', visibility: 'public',
+    host: 'Sana A.', focusMinutes: 40, breakMinutes: 10, capacity: 50,
+    rules: ['Keep NCERT open', 'Recall rounds are optional'],
+  },
+  {
+    id: 'physics-doubt-desk',
+    name: 'Physics Doubt Desk',
+    description: 'Work through your own problems; discuss what stuck during the break window.',
+    exam: 'both', level: 'class12', subject: 'physics', mode: 'doubt', visibility: 'public',
+    host: 'Kabir M.', focusMinutes: 30, breakMinutes: 10, capacity: 16,
+    rules: ['Write the full question when asking', 'No answer dumping — explain the idea'],
+  },
+  {
+    id: 'droppers-night-shift',
+    name: 'Droppers Night Shift',
+    description: 'Late-evening mixed-subject sessions for droppers keeping a long daily target.',
+    exam: 'both', level: 'dropper', subject: 'mixed', mode: 'silent', visibility: 'public',
+    host: 'Riya P.', focusMinutes: 50, breakMinutes: 10, capacity: 60,
+    rules: ['Silent during focus', 'Log your hours at the end'],
+  },
+  {
+    id: 'human-physiology-circle',
+    name: 'Human Physiology Circle',
+    description: 'A small invite-only group covering physiology diagrams and NCERT-based MCQs.',
+    exam: 'NEET', level: 'class11', subject: 'biology', mode: 'pomodoro', visibility: 'private',
+    host: 'Tanvi S.', focusMinutes: 25, breakMinutes: 5, capacity: 8,
+    rules: ['Invite only', 'Attend at least three sessions a week'],
+  },
+  {
+    id: 'coordinate-geometry-club',
+    name: 'Coordinate Geometry Club',
+    description: 'Straight lines to conics — timed problem sets, then compare approaches.',
+    exam: 'JEE', level: 'class11', subject: 'mathematics', mode: 'doubt', visibility: 'private',
+    host: 'Arjun D.', focusMinutes: 45, breakMinutes: 15, capacity: 10,
+    rules: ['Invite only', 'Attempt before discussing'],
+  },
+  {
+    id: 'physical-chem-numericals',
+    name: 'Physical Chemistry Numericals',
+    description: 'Mole concept, equilibrium and electrochemistry numericals at exam pace.',
+    exam: 'both', level: 'all', subject: 'chemistry', mode: 'pomodoro', visibility: 'public',
+    host: 'Neha J.', focusMinutes: 25, breakMinutes: 5, capacity: 30,
+    rules: ['Calculator off', 'Note your accuracy after each block'],
+  },
+  {
+    id: 'formula-flash-revision',
+    name: 'Formula Flash Revision',
+    description: 'Short, sharp revision blocks for formulas and named reactions before mocks.',
+    exam: 'JEE', level: 'class12', subject: 'mixed', mode: 'revision', visibility: 'public',
+    host: 'Dev T.', focusMinutes: 20, breakMinutes: 5, capacity: 40,
+    rules: ['Keep your formula sheet handy'],
+  },
+];

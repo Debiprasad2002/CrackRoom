@@ -1,0 +1,15 @@
+node_modules
+dist
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+
+# Django backend
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
