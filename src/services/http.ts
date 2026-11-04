@@ -99,6 +99,8 @@ export async function api<T>(path: string, { method = 'GET', body }: RequestOpti
     const message = res.status === 429 ? fallbackMessage(429) : (firstMessage(payload.detail) ?? fallbackMessage(res.status));
     throw new ApiError(res.status, message, fields);
   }
+  // A body that is not JSON means something other than the API answered, such as a proxy page.
+  if (text && data === null) throw new ApiError(502, fallbackMessage(502));
   return data as T;
 }
 
