@@ -111,7 +111,7 @@ function SubjectBalance({ sessions }: { sessions: FocusSession[] }) {
     <ul className="space-y-4">
       {rows.map(([key, minutes]) => {
         const label = key === 'general' ? 'General' : SUBJECTS[key].label;
-        const color = key === 'general' ? '#5A6585' : SUBJECTS[key].color;
+        const color = key === 'general' ? 'rgb(var(--fg-subtle))' : SUBJECTS[key].color;
         return (
           <li key={key}>
             <div className="flex items-baseline justify-between gap-3 text-sm">

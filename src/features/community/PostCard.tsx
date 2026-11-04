@@ -8,9 +8,9 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Comments } from './Comments';
 
 export const REACTIONS: { kind: ReactionKind; label: string; icon: LucideIcon; on: string }[] = [
-  { kind: 'like', label: 'Like', icon: Heart, on: 'text-rose-600 bg-rose-500/10 border-rose-400/40 [&_svg]:fill-current' },
-  { kind: 'fire', label: 'Motivating', icon: Flame, on: 'text-orange-600 bg-orange-500/10 border-orange-400/40 [&_svg]:fill-current' },
-  { kind: 'idea', label: 'Helpful', icon: Lightbulb, on: 'text-amber-600 bg-amber-400/15 border-amber-400/50 [&_svg]:fill-current' },
+  { kind: 'like', label: 'Like', icon: Heart, on: 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-400/40 [&_svg]:fill-current' },
+  { kind: 'fire', label: 'Motivating', icon: Flame, on: 'text-orange-600 dark:text-orange-400 bg-orange-500/10 border-orange-400/40 [&_svg]:fill-current' },
+  { kind: 'idea', label: 'Helpful', icon: Lightbulb, on: 'text-amber-600 dark:text-amber-300 bg-amber-400/15 border-amber-400/50 [&_svg]:fill-current' },
 ];
 
 export function timeAgo(iso: string, now = Date.now()) {
@@ -67,11 +67,14 @@ interface PostCardProps {
   onReport: () => void;
   onReportComment: (comment: PostComment) => void;
   onCommentCount: (delta: number) => void;
+  /** Opens the thread straight away and points at one comment, when arriving from a notification. */
+  openComments?: boolean;
+  highlightCommentId?: number;
 }
 
-export function PostCard({ post, onReact, onReshare, onDelete, onReport, onReportComment, onCommentCount }: PostCardProps) {
+export function PostCard({ post, onReact, onReshare, onDelete, onReport, onReportComment, onCommentCount, openComments, highlightCommentId }: PostCardProps) {
   const [menu, setMenu] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(openComments ?? false);
   const total = post.reactions.like + post.reactions.fire + post.reactions.idea;
   const original = post.resharedFrom;
 
@@ -203,7 +206,7 @@ export function PostCard({ post, onReact, onReshare, onDelete, onReport, onRepor
           <span className="hidden sm:inline">Reshare</span>
         </button>
       </div>
-      {showComments && <Comments postId={post.id} onCountChange={onCommentCount} onReport={onReportComment} />}
+      {showComments && <Comments postId={post.id} onCountChange={onCommentCount} onReport={onReportComment} highlightId={highlightCommentId} />}
     </motion.article>
   );
 }

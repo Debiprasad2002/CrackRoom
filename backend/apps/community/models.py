@@ -32,6 +32,8 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='post_comments')
+    # The comment this one answers. Replies outlive it, and simply stop being threaded.
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
     body = models.CharField(max_length=500)
     is_hidden = models.BooleanField(default=False, help_text='Hidden by a moderator.')
     created_at = models.DateTimeField(auto_now_add=True)

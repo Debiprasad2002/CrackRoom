@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'apps.study',
     'apps.mentorship',
     'apps.community',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [

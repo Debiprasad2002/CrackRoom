@@ -9,7 +9,7 @@ interface ProgressRingProps {
   children?: ReactNode;
 }
 
-export function ProgressRing({ value, size = 120, stroke = 8, color = '#7C3AED', label, children }: ProgressRingProps) {
+export function ProgressRing({ value, size = 120, stroke = 8, color = 'rgb(var(--violet-400))', label, children }: ProgressRingProps) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.min(1, Math.max(0, value));
@@ -24,7 +24,7 @@ export function ProgressRing({ value, size = 120, stroke = 8, color = '#7C3AED',
       aria-valuenow={Math.round(clamped * 100)}
     >
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E6E9F1" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--ink-600))" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}

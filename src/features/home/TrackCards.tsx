@@ -114,7 +114,7 @@ export function TrackCards() {
                 <span className="flex size-10 items-center justify-center rounded-xl bg-white/20 ring-1 ring-white/30 backdrop-blur">
                   <Icon className="size-5" aria-hidden />
                 </span>
-                {mine && <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-fg">Your track</span>}
+                {mine && <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#141A2E]">Your track</span>}
               </div>
               <h3 className="relative mt-auto pt-4 font-display text-[1.375rem] font-semibold leading-none text-white sm:text-2xl">{t.title}</h3>
               <p className="relative mt-1 line-clamp-2 text-xs leading-snug text-white/80 sm:text-[13px]">{t.subtitle}</p>
@@ -135,7 +135,7 @@ function TrackLink({ to, icon: Icon, label }: { to: string; icon: LucideIcon; la
     <Link
       to={to}
       className={cn(
-        'inline-flex h-8 items-center gap-1 rounded-full bg-white/15 px-2.5 text-xs font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white hover:text-fg',
+        'inline-flex h-8 items-center gap-1 rounded-full bg-white/15 px-2.5 text-xs font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white hover:text-[#141A2E]',
         '[@media(pointer:coarse)]:h-9',
       )}
     >

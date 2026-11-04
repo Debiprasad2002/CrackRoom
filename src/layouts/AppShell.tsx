@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { BookOpen, CalendarCheck, DoorOpen, GraduationCap, House, MessagesSquare, Timer, type LucideIcon } from 'lucide-react';
+import { Bell, BookOpen, CalendarCheck, DoorOpen, GraduationCap, House, MessagesSquare, Timer, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Logo, LogoMark } from '@/components/brand/Logo';
 import { Avatar } from '@/components/ui/Avatar';
@@ -14,6 +14,8 @@ import { ErrorState, PageSkeleton } from '@/components/ui/Feedback';
 import { useFocus } from '@/features/focus/FocusContext';
 import { usePlanner } from '@/features/planner/PlannerContext';
 import { LocalImportPrompt } from '@/features/sync/LocalImportPrompt';
+import { UnreadBadge } from '@/features/notifications/NotificationsContext';
+import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 interface NavItem {
   to: string;
@@ -33,6 +35,7 @@ const NAV: NavItem[] = [
 
 const FOCUS: NavItem = { to: '/focus', label: 'Focus Timer', short: 'Focus', icon: Timer };
 const MENTORSHIP: NavItem = { to: '/mentorship', label: 'Mentorship', short: 'Mentors', icon: GraduationCap };
+const NOTIFICATIONS: NavItem = { to: '/notifications', label: 'Notifications', short: 'Alerts', icon: Bell };
 
 /*
  * Three navigation layouts, one set of destinations:
@@ -84,11 +87,13 @@ function Sidebar() {
         <div className="my-3 h-px bg-line" aria-hidden />
         <SidebarLink item={FOCUS} />
         <SidebarLink item={MENTORSHIP} />
+        <SidebarLink item={NOTIFICATIONS} badge={<UnreadBadge />} />
         <div className="mt-2 px-3">
           <TimerPill className="w-full justify-center" hideWhenIdle />
         </div>
       </nav>
       <div className="border-t border-line p-3">
+        <ThemeToggle withLabel className="mb-1 h-10 w-full rounded-xl px-3 text-sm font-medium hover:bg-ink-700/60" />
         <NavLink
           to="/profile"
           className={({ isActive }) =>
@@ -108,7 +113,7 @@ function Sidebar() {
   );
 }
 
-function RailLink({ item }: { item: NavItem }) {
+function RailLink({ item, badge }: { item: NavItem; badge?: ReactNode }) {
   const Icon = item.icon;
   return (
     <NavLink
@@ -131,6 +136,7 @@ function RailLink({ item }: { item: NavItem }) {
               />
             )}
             <Icon className={cn('relative size-5', isActive ? 'text-violet-300' : 'group-hover:text-fg-muted')} aria-hidden />
+            {badge && <span className="absolute -top-1 right-1.5">{badge}</span>}
           </span>
           {item.short}
         </>
@@ -153,8 +159,10 @@ function Rail() {
         <div className="my-1 h-px w-10 bg-line" aria-hidden />
         <RailLink item={FOCUS} />
         <RailLink item={MENTORSHIP} />
+        <RailLink item={NOTIFICATIONS} badge={<UnreadBadge />} />
         <TimerPill className="mt-1 h-8 px-2 text-xs" hideWhenIdle />
       </nav>
+      <ThemeToggle className="mb-2 size-10 justify-center rounded-xl hover:bg-ink-700/60" />
       <NavLink
         to="/profile"
         title="Profile and settings"
@@ -177,6 +185,10 @@ function MobileTopBar() {
         </Link>
         <div className="flex items-center gap-1">
           <TimerPill />
+          <Link to="/notifications" className="relative inline-flex size-10 items-center justify-center rounded-xl text-fg-muted hover:bg-ink-700 hover:text-fg" aria-label="Notifications">
+            <Bell className="size-5" aria-hidden />
+            <UnreadBadge className="absolute right-0 top-0" />
+          </Link>
           <Link to="/mentorship" className="inline-flex size-10 items-center justify-center rounded-xl text-fg-muted hover:bg-ink-700 hover:text-fg" aria-label="Mentorship">
             <GraduationCap className="size-5" aria-hidden />
           </Link>

@@ -15,6 +15,7 @@ import { ProfileCard } from '@/features/profile/ProfileCard';
 import { useFocus } from '@/features/focus/FocusContext';
 import { AchievementList } from '@/features/progress/AchievementList';
 import { AccountSection } from '@/features/profile/AccountSection';
+import { AppearanceSetting } from '@/features/theme/ThemeToggle';
 import { AvatarPicker } from '@/features/profile/AvatarPicker';
 import { USING_SAMPLE_DATA } from '@/services/config';
 import { computeAchievements } from '@/features/progress/achievements';
@@ -64,6 +65,12 @@ export default function ProfilePage() {
         </Section>
 
         <div className="space-y-6 lg:col-span-2">
+          <Section title="Appearance" id="profile-appearance">
+            <Card className="p-5">
+              <AppearanceSetting />
+            </Card>
+          </Section>
+
           <Section title="Privacy" id="profile-privacy">
             <Card className="px-5 py-2">
               <div className="divide-y divide-line">

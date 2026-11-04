@@ -6,6 +6,65 @@
   :root {
     color-scheme: light;
     -webkit-tap-highlight-color: transparent;
+
+    --ink-950: 232 235 242;
+    --ink-900: 244 245 249;
+    --ink-850: 249 250 252;
+    --ink-800: 255 255 255;
+    --ink-750: 250 250 253;
+    --ink-700: 238 240 246;
+    --ink-600: 227 231 239;
+    --ink-500: 201 208 222;
+    --line: 227 231 239;
+    --line-strong: 210 216 228;
+    --fg: 20 26 46;
+    --fg-muted: 74 84 112;
+    --fg-subtle: 100 110 137;
+    --violet-300: 109 40 217;
+    --violet-400: 124 58 237;
+    --violet-500: 124 58 237;
+    --violet-600: 109 40 217;
+    --violet-700: 91 33 182;
+    --cyan-300: 14 116 144;
+    --cyan-400: 8 145 178;
+    --mint-400: 21 128 61;
+    --amber-300: 180 83 9;
+    --amber-400: 217 119 6;
+    --rose-400: 225 29 72;
+    --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px -16px rgba(16, 24, 40, 0.12);
+    --shadow-pop: 0 2px 6px rgba(16, 24, 40, 0.06), 0 24px 48px -16px rgba(16, 24, 40, 0.22);
+  }
+
+  /* Deep navy, taken from the logo. Accents flip to their lighter tones so text stays readable. */
+  :root.dark {
+    color-scheme: dark;
+
+    --ink-950: 5 8 26;
+    --ink-900: 7 11 32;
+    --ink-850: 10 15 40;
+    --ink-800: 15 21 51;
+    --ink-750: 18 25 58;
+    --ink-700: 26 34 72;
+    --ink-600: 35 44 86;
+    --ink-500: 61 72 120;
+    --line: 34 42 82;
+    --line-strong: 49 58 104;
+    --fg: 235 238 250;
+    --fg-muted: 170 178 208;
+    --fg-subtle: 139 149 184;
+    --violet-300: 196 181 253;
+    --violet-400: 167 139 250;
+    --violet-500: 124 58 237;
+    --violet-600: 139 92 246;
+    --violet-700: 221 214 254;
+    --cyan-300: 103 232 249;
+    --cyan-400: 34 211 238;
+    --mint-400: 74 222 128;
+    --amber-300: 252 211 77;
+    --amber-400: 251 191 36;
+    --rose-400: 251 113 133;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 28px -16px rgba(0, 0, 0, 0.6);
+    --shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.35), 0 24px 48px -16px rgba(0, 0, 0, 0.75);
   }
 
   /* Swipe rows scroll sideways inside themselves; clipping stops phones from zooming the
@@ -44,11 +103,11 @@
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: #c9d0de transparent;
+    scrollbar-color: rgb(var(--ink-500)) transparent;
   }
 
   dialog::backdrop {
-    background: rgb(20 26 46 / 0.35);
+    background: rgb(5 8 26 / 0.5);
     backdrop-filter: blur(4px);
   }
 

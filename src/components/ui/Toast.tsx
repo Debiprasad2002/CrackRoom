@@ -40,16 +40,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] z-50 flex flex-col items-center gap-2 px-4 md:bottom-6 md:items-end md:px-6"
+        className="pointer-events-none fixed inset-x-0 top-[calc(4.25rem+env(safe-area-inset-top))] z-50 flex flex-col items-center gap-2 px-4 md:top-6 md:items-end md:px-6"
       >
         <AnimatePresence initial={false}>
           {toasts.map((t) => (
             <motion.div
               key={t.id}
               layout
-              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              initial={{ opacity: 0, y: -12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, transition: { duration: 0.15 } }}
+              exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
               transition={{ type: 'spring', stiffness: 420, damping: 32 }}
               className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-line-strong bg-ink-700 p-3.5 shadow-pop"
               role="status"

@@ -138,7 +138,7 @@ export function RoomTimerPanel({ room, timer, skew, present, onTimer }: RoomTime
           value={clock.status === 'idle' ? 0 : 1 - clock.remainingMs / clock.phaseTotalMs}
           size={248}
           stroke={8}
-          color={isBreak ? '#0891B2' : '#7C3AED'}
+          color={isBreak ? 'rgb(var(--cyan-400))' : 'rgb(var(--violet-400))'}
           label={`${isBreak ? 'Break' : 'Focus'} progress`}
         >
           <AnimatePresence mode="wait" initial={false}>

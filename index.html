@@ -1,15 +1,171 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#F4F5F9" />
-    <meta name="description" content="CrackRoom — study together, crack it together. Study rooms, curated notes and focus tools for JEE and NEET aspirants." />
-    <title>CrackRoom</title>
+    <meta name="theme-color" content="#070B20" />
+    <title>CrackRoom: Free Online Study Rooms for JEE &amp; NEET</title>
+    <meta name="description" content="Study with other JEE and NEET aspirants in free live study rooms. Shared focus timers, a study planner, notes by chapter, a student community and 1:1 mentorship." />
+    <link rel="canonical" href="https://www.crackroom.online/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CrackRoom" />
+    <meta property="og:title" content="CrackRoom: Free Online Study Rooms for JEE &amp; NEET" />
+    <meta property="og:description" content="Study together, crack it together. Live study rooms, focus timers, notes and a community for JEE and NEET aspirants." />
+    <meta property="og:url" content="https://www.crackroom.online/" />
+    <meta property="og:image" content="https://www.crackroom.online/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The CrackRoom logo: an atom around a graduation cap and an open book" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://www.crackroom.online/#website",
+            "name": "CrackRoom",
+            "url": "https://www.crackroom.online/",
+            "inLanguage": "en-IN"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://www.crackroom.online/#organization",
+            "name": "CrackRoom",
+            "url": "https://www.crackroom.online/",
+            "logo": "https://www.crackroom.online/logo-512.png"
+          }
+        ]
+      }
+    </script>
+    <!-- Runs before the first paint: picks the theme (see lib/theme.ts) and whether the homepage shows (see App.tsx). -->
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var theme = null;
+        var signedIn = false;
+        try {
+          theme = localStorage.getItem('crackroom-theme');
+          signedIn = localStorage.getItem('crackroom-signed-in') === '1';
+        } catch (e) {}
+        if (theme === 'light') {
+          root.classList.remove('dark');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F5F9');
+        }
+        if (location.pathname !== '/' || signedIn) root.classList.add('app-route');
+      })();
+    </script>
+    <style>
+      html { background: #f4f5f9; }
+      html.dark { background: #070b20; color-scheme: dark; }
+      html.app-route #homepage { display: none; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+
+    <div id="homepage" class="relative overflow-hidden">
+      <div class="pointer-events-none absolute inset-x-0 top-0 h-[34rem]" style="background: radial-gradient(60% 100% at 50% 0%, rgba(124, 58, 237, 0.2), transparent 70%)" aria-hidden="true"></div>
+      <header class="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <a href="/" class="inline-flex items-center gap-2.5 font-display text-[17px] font-semibold tracking-tight text-fg" aria-label="CrackRoom home">
+          <img src="/favicon.svg" width="32" height="32" alt="" />
+          <span>Crack<span class="text-violet-300">Room</span></span>
+        </a>
+        <a href="/signin" class="inline-flex h-10 items-center rounded-xl border border-line-strong bg-ink-700 px-4 text-sm font-medium text-fg hover:bg-ink-600">Sign in</a>
+      </header>
+
+      <main class="relative mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <section class="mx-auto max-w-3xl py-14 text-center sm:py-20">
+          <img src="/logo-192.png" width="112" height="112" alt="CrackRoom logo: an atom around a graduation cap and an open book" class="mx-auto rounded-3xl shadow-pop" />
+          <h1 class="mt-8 text-4xl font-semibold leading-[1.08] sm:text-6xl">Free online study rooms for JEE and NEET aspirants</h1>
+          <p class="mx-auto mt-5 max-w-2xl text-lg text-fg-muted">Preparing alone is hard. On CrackRoom you study alongside other students in live rooms, run focus sessions on a shared timer, and keep your whole plan in one place.</p>
+          <a href="/signin" class="mt-8 inline-flex h-12 items-center rounded-xl bg-violet-500 px-6 text-[15px] font-semibold text-white hover:bg-violet-600">Start studying free</a>
+          <p class="mt-3 text-sm text-fg-subtle">Sign in with Google. No payment needed.</p>
+        </section>
+
+        <section aria-labelledby="features">
+          <h2 id="features" class="text-center text-3xl font-semibold">Everything you need for a focused study day</h2>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <li class="surface p-5">
+              <h3 class="text-lg font-semibold">Live study rooms</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">Join a room for your exam, class or subject, see who is studying with you, and talk in the room chat during breaks.</p>
+            </li>
+            <li class="surface p-5">
+              <h3 class="text-lg font-semibold">Shared focus timer</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">Everyone in a room follows the same focus and break cycle, so you start, stop and rest together.</p>
+            </li>
+            <li class="surface p-5">
+              <h3 class="text-lg font-semibold">Personal focus timer</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">Set your own session length, keep the timer on screen as you move around, and watch your consistency build.</p>
+            </li>
+            <li class="surface p-5">
+              <h3 class="text-lg font-semibold">Study planner</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">Plan your sessions by subject and day, then tick them off as you finish them.</p>
+            </li>
+            <li class="surface p-5">
+              <h3 class="text-lg font-semibold">Notes library</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">Find study notes organised by exam, subject and chapter instead of searching through scattered files.</p>
+            </li>
+            <li class="surface p-5">
+              <h3 class="text-lg font-semibold">Community and mentorship</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">Share wins and struggles with other aspirants, and book 1:1 sessions with mentors. Booking is free for now.</p>
+            </li>
+          </ul>
+        </section>
+
+        <section class="mt-16 grid gap-4 md:grid-cols-2" aria-label="Exams">
+          <a href="/jee-study-rooms" class="surface block p-6 hover:border-ink-500">
+            <h2 class="text-2xl font-semibold">JEE study rooms</h2>
+            <p class="mt-2 text-sm text-fg-muted">Physics, Chemistry and Mathematics sessions with other JEE Main and Advanced aspirants.</p>
+            <span class="mt-3 inline-block text-sm font-semibold text-violet-300">How it works for JEE</span>
+          </a>
+          <a href="/neet-study-rooms" class="surface block p-6 hover:border-ink-500">
+            <h2 class="text-2xl font-semibold">NEET study rooms</h2>
+            <p class="mt-2 text-sm text-fg-muted">Physics, Chemistry and Biology sessions with other NEET UG aspirants.</p>
+            <span class="mt-3 inline-block text-sm font-semibold text-violet-300">How it works for NEET</span>
+          </a>
+        </section>
+
+        <section class="mx-auto mt-16 max-w-3xl" aria-labelledby="faq">
+          <h2 id="faq" class="text-center text-3xl font-semibold">Questions students ask</h2>
+          <div class="mt-6 space-y-3">
+            <details class="surface p-5" open>
+              <summary class="cursor-pointer font-semibold text-fg">Is CrackRoom free?</summary>
+              <p class="mt-2 text-sm text-fg-muted">Yes. You can use the study rooms, timers, planner, notes and community for free, and you only need a Google account to sign in.</p>
+            </details>
+            <details class="surface p-5">
+              <summary class="cursor-pointer font-semibold text-fg">What is an online study room?</summary>
+              <p class="mt-2 text-sm text-fg-muted">It is a shared space where students study at the same time. Seeing others focus, and following one timer together, makes it easier to sit down and keep going.</p>
+            </details>
+            <details class="surface p-5">
+              <summary class="cursor-pointer font-semibold text-fg">Who is it for?</summary>
+              <p class="mt-2 text-sm text-fg-muted">Students preparing for JEE or NEET, including Class 11, Class 12 and droppers.</p>
+            </details>
+            <details class="surface p-5">
+              <summary class="cursor-pointer font-semibold text-fg">Does it work on my phone?</summary>
+              <p class="mt-2 text-sm text-fg-muted">Yes. CrackRoom works in the browser on phones, tablets and computers, so there is nothing to install.</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="mt-16 text-center">
+          <h2 class="text-3xl font-semibold">Study together. Crack it together.</h2>
+          <a href="/signin" class="mt-6 inline-flex h-12 items-center rounded-xl bg-violet-500 px-6 text-[15px] font-semibold text-white hover:bg-violet-600">Join CrackRoom</a>
+        </section>
+      </main>
+
+      <footer class="relative border-t border-line py-6 text-center text-sm text-fg-subtle">
+        <nav aria-label="Exams" class="flex justify-center gap-5">
+          <a href="/jee-study-rooms" class="hover:text-fg">JEE study rooms</a>
+          <a href="/neet-study-rooms" class="hover:text-fg">NEET study rooms</a>
+        </nav>
+      </footer>
+    </div>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -2,7 +2,7 @@ import { addDays, dayKey, fmt, formatMinutes, startOfWeek } from '@/lib/date';
 
 const WEEKS = 12;
 // Sequential, single hue (violet) from empty to goal met.
-const STEPS = ['#E8EBF2', 'rgba(124,58,237,0.22)', 'rgba(124,58,237,0.45)', 'rgba(124,58,237,0.7)', '#6D28D9'];
+const STEPS = ['rgb(var(--ink-600))', 'rgb(var(--violet-400) / 0.25)', 'rgb(var(--violet-400) / 0.5)', 'rgb(var(--violet-400) / 0.75)', 'rgb(var(--violet-400))'];
 const STEP_LABELS = ['No focus', 'Under a quarter of goal', 'Under half of goal', 'Under goal', 'Goal met'];
 
 function step(minutes: number, goal: number) {
@@ -43,7 +43,7 @@ export function ConsistencyGrid({ byDay, goal }: { byDay: Map<string, number>; g
               className="size-3.5 rounded-[3px] sm:size-[18px]"
               style={{
                 background: d.future ? 'transparent' : STEPS[step(d.minutes, goal)],
-                outline: d.key === today ? '1.5px solid #141A2E' : undefined,
+                outline: d.key === today ? '1.5px solid rgb(var(--fg))' : undefined,
                 outlineOffset: 1,
               }}
             />

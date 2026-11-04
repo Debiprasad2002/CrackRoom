@@ -93,7 +93,8 @@ export function GoogleSignInButton({ onCredential, onError, disabled }: GoogleSi
   return (
     <div className={disabled ? 'pointer-events-none opacity-50' : undefined} aria-busy={!ready}>
       {!ready && <Skeleton className="h-11 w-full rounded-full" />}
-      <div ref={host} className="flex min-h-11 w-full justify-center" />
+      {/* Google's button is an iframe, which shows a white box behind it under a dark color-scheme. */}
+      <div ref={host} className="flex min-h-11 w-full justify-center [color-scheme:light]" />
     </div>
   );
 }

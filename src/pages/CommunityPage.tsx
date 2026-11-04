@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowUp, Film, ImageIcon, MessagesSquare, Send, Sparkles } from 'lucide-react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, ArrowUp, Film, ImageIcon, MessagesSquare, Send, Sparkles } from 'lucide-react';
 import type { CommunityPost, ReactionKind } from '@/types';
 import { cn } from '@/lib/cn';
 import { communityService } from '@/services/communityService';
@@ -35,6 +36,127 @@ export default function CommunityPage() {
         <Feed />
       )}
     </div>
+  );
+}
+
+/** Flips the reaction straight away, then takes the server's counts. */
+async function toggleReaction(post: CommunityPost, kind: ReactionKind, apply: (post: CommunityPost) => void, notify: ReturnType<typeof useToast>) {
+  const removing = post.myReaction === kind;
+  const reactions = { ...post.reactions };
+  if (post.myReaction) reactions[post.myReaction] -= 1;
+  if (!removing) reactions[kind] += 1;
+  apply({ ...post, reactions, myReaction: removing ? null : kind });
+  try {
+    apply(removing ? await communityService.unreact(post.id) : await communityService.react(post.id, kind));
+  } catch (e) {
+    apply(post);
+    notify({ tone: 'error', title: 'Reaction not saved', description: errorMessage(e) });
+  }
+}
+
+/** One post on its own page, which is where notifications lead. */
+export function PostPage() {
+  const params = useParams();
+  const [search] = useSearchParams();
+  const navigate = useNavigate();
+  const notify = useToast();
+  const postId = Number(params.postId);
+  const commentParam = Number(search.get('comment'));
+  const highlightId = Number.isInteger(commentParam) && commentParam > 0 ? commentParam : undefined;
+  const [post, setPost] = useState<CommunityPost | null>(null);
+  const [failed, setFailed] = useState<string>();
+  const [resharing, setResharing] = useState<CommunityPost | null>(null);
+  const [reporting, setReporting] = useState<ReportTarget | null>(null);
+  const [deleting, setDeleting] = useState<CommunityPost | null>(null);
+
+  const load = useCallback(async () => {
+    setFailed(undefined);
+    setPost(null);
+    try {
+      setPost(await communityService.post(postId));
+    } catch (e) {
+      setFailed(errorMessage(e));
+    }
+  }, [postId]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-4">
+      <Link to="/community" className="inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-fg-muted hover:text-fg">
+        <ArrowLeft className="size-4" aria-hidden />
+        Community
+      </Link>
+      {failed ? (
+        <Card>
+          <ErrorState message={failed} onRetry={load} />
+        </Card>
+      ) : !post ? (
+        <Skeleton className="h-52 rounded-2xl" />
+      ) : (
+        <PostCard
+          // Remounting lets a second notification for the same post open and highlight its own comment.
+          key={`${post.id}-${highlightId ?? ''}`}
+          post={post}
+          openComments={highlightId != null}
+          highlightCommentId={highlightId}
+          onReact={(kind) => toggleReaction(post, kind, setPost, notify)}
+          onReshare={() => setResharing(post)}
+          onDelete={() => setDeleting(post)}
+          onReport={() => setReporting({ type: 'post', id: post.id })}
+          onReportComment={(c) => setReporting({ type: 'comment', id: c.id })}
+          onCommentCount={(delta) => setPost((p) => p && { ...p, commentCount: Math.max(0, p.commentCount + delta) })}
+        />
+      )}
+      <ReshareDialog
+        post={resharing}
+        onClose={() => setResharing(null)}
+        onDone={() => {
+          setResharing(null);
+          setPost((p) => p && { ...p, reshareCount: p.reshareCount + 1 });
+        }}
+      />
+      <ReportDialog target={reporting} onClose={() => setReporting(null)} />
+      <DeletePostDialog post={deleting} onClose={() => setDeleting(null)} onDeleted={() => navigate('/community', { replace: true })} />
+    </div>
+  );
+}
+
+function DeletePostDialog({ post, onClose, onDeleted }: { post: CommunityPost | null; onClose: () => void; onDeleted: (post: CommunityPost) => void }) {
+  const notify = useToast();
+  return (
+    <Dialog
+      open={post != null}
+      onClose={onClose}
+      size="sm"
+      title="Delete this post?"
+      description="It disappears from the community. Reshares will show that the original was removed."
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose}>
+            Keep it
+          </Button>
+          <Button
+            variant="danger"
+            onClick={async () => {
+              if (!post) return;
+              try {
+                await communityService.remove(post.id);
+                onDeleted(post);
+                notify({ title: 'Post deleted' });
+              } catch (e) {
+                notify({ tone: 'error', title: 'Not deleted', description: errorMessage(e) });
+              }
+              onClose();
+            }}
+          >
+            Delete
+          </Button>
+        </>
+      }
+    />
   );
 }
 
@@ -113,21 +235,6 @@ function Feed() {
     setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   }
 
-  async function react(post: CommunityPost, kind: ReactionKind) {
-    // Optimistic: flip the reaction now, then take the server's counts.
-    const removing = post.myReaction === kind;
-    const reactions = { ...post.reactions };
-    if (post.myReaction) reactions[post.myReaction] -= 1;
-    if (!removing) reactions[kind] += 1;
-    replace({ ...post, reactions, myReaction: removing ? null : kind });
-    try {
-      replace(removing ? await communityService.unreact(post.id) : await communityService.react(post.id, kind));
-    } catch (e) {
-      replace(post);
-      notify({ tone: 'error', title: 'Reaction not saved', description: errorMessage(e) });
-    }
-  }
-
   return (
     <>
       <Composer onPosted={(p) => setPosts((prev) => [p, ...prev])} />
@@ -184,7 +291,7 @@ function Feed() {
             <PostCard
               key={post.id}
               post={post}
-              onReact={(kind) => react(post, kind)}
+              onReact={(kind) => toggleReaction(post, kind, replace, notify)}
               onReshare={() => setResharing(post)}
               onDelete={() => setDeleting(post)}
               onReport={() => setReporting({ type: 'post', id: post.id })}
@@ -209,36 +316,7 @@ function Feed() {
         }}
       />
       <ReportDialog target={reporting} onClose={() => setReporting(null)} />
-      <Dialog
-        open={deleting != null}
-        onClose={() => setDeleting(null)}
-        size="sm"
-        title="Delete this post?"
-        description="It disappears from the community. Reshares will show that the original was removed."
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setDeleting(null)}>
-              Keep it
-            </Button>
-            <Button
-              variant="danger"
-              onClick={async () => {
-                if (!deleting) return;
-                try {
-                  await communityService.remove(deleting.id);
-                  setPosts((prev) => prev.filter((p) => p.id !== deleting.id));
-                  notify({ title: 'Post deleted' });
-                } catch (e) {
-                  notify({ tone: 'error', title: 'Not deleted', description: errorMessage(e) });
-                }
-                setDeleting(null);
-              }}
-            >
-              Delete
-            </Button>
-          </>
-        }
-      />
+      <DeletePostDialog post={deleting} onClose={() => setDeleting(null)} onDeleted={(removed) => setPosts((prev) => prev.filter((p) => p.id !== removed.id))} />
     </>
   );
 }

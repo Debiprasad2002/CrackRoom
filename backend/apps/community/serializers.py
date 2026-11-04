@@ -101,14 +101,28 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     canDelete = serializers.SerializerMethodField()
+    parentId = serializers.PrimaryKeyRelatedField(
+        source='parent',
+        queryset=Comment.objects.filter(is_hidden=False),
+        required=False,
+        allow_null=True,
+        error_messages={'does_not_exist': 'That comment is no longer available.'},
+    )
+    replyToName = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'body', 'author', 'createdAt', 'canDelete']
+        fields = ['id', 'body', 'author', 'createdAt', 'canDelete', 'parentId', 'replyToName']
         read_only_fields = ['id']
 
     def get_author(self, comment) -> dict:
         return author_data(comment.author, self.context['request'].user)
+
+    def get_replyToName(self, comment) -> str | None:
+        parent = comment.parent
+        if parent is None or parent.is_hidden or not parent.author.is_active:
+            return None
+        return parent.author.display_name
 
     def get_canDelete(self, comment) -> bool:
         # The commenter, the author of the post (to keep their thread clean), or staff.

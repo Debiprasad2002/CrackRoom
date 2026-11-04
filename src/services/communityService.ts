@@ -12,6 +12,7 @@ export const communityService = {
     const qs = params.toString();
     return api<FeedPage>(`/community/posts/${qs ? `?${qs}` : ''}`);
   },
+  post: (id: number) => api<CommunityPost>(post(id)),
   create: (body: string) => api<CommunityPost>('/community/posts/', { method: 'POST', body: { body } }),
   reshare: (id: number, body: string) => api<CommunityPost>(post(id, 'reshare/'), { method: 'POST', body: { body } }),
   react: (id: number, kind: ReactionKind) => api<CommunityPost>(post(id, 'react/'), { method: 'POST', body: { kind } }),
@@ -20,7 +21,8 @@ export const communityService = {
   report: (id: number, reason: ReportReason, details: string) =>
     api<void>(post(id, 'report/'), { method: 'POST', body: { reason, details } }),
   comments: (id: number) => api<PostComment[]>(post(id, 'comments/')),
-  addComment: (id: number, body: string) => api<PostComment>(post(id, 'comments/'), { method: 'POST', body: { body } }),
+  addComment: (id: number, body: string, parentId?: number) =>
+    api<PostComment>(post(id, 'comments/'), { method: 'POST', body: parentId ? { body, parentId } : { body } }),
   deleteComment: (commentId: number) => api<void>(`/community/comments/${commentId}/`, { method: 'DELETE' }),
   reportComment: (commentId: number, reason: ReportReason) =>
     api<void>(`/community/comments/${commentId}/report/`, { method: 'POST', body: { reason, details: '' } }),

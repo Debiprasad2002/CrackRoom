@@ -35,7 +35,7 @@ export function FloatingTimer() {
         >
           <div className="flex items-center gap-1 rounded-2xl border border-line-strong bg-ink-800/95 p-1.5 pr-2 shadow-pop backdrop-blur-xl">
             <Link to="/focus" className="flex items-center gap-3 rounded-xl py-0.5 pl-0.5 pr-2 hover:bg-ink-700" aria-label={`${label}, ${formatClock(left)} left. Open focus timer`}>
-              <ProgressRing value={1 - left / total} size={44} stroke={4} color={isBreak ? '#0891B2' : '#7C3AED'} label={`${label} progress`}>
+              <ProgressRing value={1 - left / total} size={44} stroke={4} color={isBreak ? 'rgb(var(--cyan-400))' : 'rgb(var(--violet-400))'} label={`${label} progress`}>
                 {isBreak ? <Coffee className="size-4 text-cyan-300" aria-hidden /> : <Timer className="size-4 text-violet-300" aria-hidden />}
               </ProgressRing>
               <span className="min-w-0">

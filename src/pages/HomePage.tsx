@@ -132,7 +132,7 @@ function TodayCard({ todayMinutes, goal, sessionsToday }: { todayMinutes: number
   const roomy = useMediaQuery('(min-width: 640px)');
   return (
     <Card className="flex flex-row items-center gap-4 p-4 sm:gap-6 sm:p-6 lg:col-span-2">
-      <ProgressRing value={progress} size={roomy ? 136 : 96} stroke={roomy ? 10 : 8} label="Progress toward today's focus goal" color={done ? '#16A34A' : '#7C3AED'}>
+      <ProgressRing value={progress} size={roomy ? 136 : 96} stroke={roomy ? 10 : 8} label="Progress toward today's focus goal" color={done ? 'rgb(var(--mint-400))' : 'rgb(var(--violet-400))'}>
         <span className="text-xl font-semibold leading-none text-fg tabular sm:text-[1.625rem]">{formatMinutes(todayMinutes)}</span>
         <span className="mt-1 text-[11px] text-fg-subtle sm:text-xs">of {formatMinutes(goal)}</span>
       </ProgressRing>

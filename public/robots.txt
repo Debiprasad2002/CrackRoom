@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /signin
+Disallow: /welcome
+Disallow: /rooms
+Disallow: /notes
+Disallow: /planner
+Disallow: /progress
+Disallow: /focus
+Disallow: /community
+Disallow: /mentorship
+Disallow: /profile
+Disallow: /notifications
+
+Sitemap: https://www.crackroom.online/sitemap.xml

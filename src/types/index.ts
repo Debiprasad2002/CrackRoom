@@ -244,6 +244,27 @@ export interface PostComment {
   author: PostAuthor;
   createdAt: string;
   canDelete: boolean;
+  parentId: number | null;
+  replyToName: string | null;
+}
+
+export type NotificationKind = 'reply' | 'comment' | 'reaction' | 'reshare';
+
+export interface AppNotification {
+  id: number;
+  kind: NotificationKind;
+  actor: PostAuthor;
+  postId: number;
+  commentId: number | null;
+  preview: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationPage {
+  results: AppNotification[];
+  unread: number;
+  next: number | null;
 }
 
 export interface FeedPage {

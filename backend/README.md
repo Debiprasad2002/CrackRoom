@@ -68,13 +68,16 @@ Every endpoint except health, CSRF, session, Google sign-in and logout requires 
 | POST | `/api/mentorship/me/slots/` | Mentors only: `{ startsAt: [...] }` publishes slots |
 | DELETE | `/api/mentorship/me/slots/:slotId/` | Mentors only: removes a slot (cancelling any booking on it) |
 | GET / POST | `/api/community/posts/` | Feed, newest first (`before=<id>` for the next page, `mine=1` for your own) / post `{ body }` |
-| DELETE | `/api/community/posts/:id/` | Author or staff deletes a post |
+| GET / DELETE | `/api/community/posts/:id/` | One post (notifications link here) / author or staff deletes it |
 | POST | `/api/community/posts/:id/reshare/` | `{ body? }` reshares the original post, optionally with a comment |
 | POST / DELETE | `/api/community/posts/:id/react/` | `{ kind: like \| fire \| idea }` sets your reaction; DELETE removes it |
 | POST | `/api/community/posts/:id/report/` | `{ reason, details? }` → moderation queue |
 | GET / POST | `/api/community/posts/:id/comments/` | A post's comments, oldest first / add `{ body }` (up to 500 characters) |
 | DELETE | `/api/community/comments/:id/` | The commenter, the post's author or staff removes a comment |
 | POST | `/api/community/comments/:id/report/` | `{ reason }` → moderation queue |
+| GET | `/api/notifications/` | Your notifications, newest first, with the `unread` count (`before=<id>` for the next page) |
+| POST | `/api/notifications/:id/read/` | Marks one as read |
+| POST | `/api/notifications/read-all/` | Marks all as read |
 | GET | `/api/resources/` | Published notes (filters: `exam`, `level`, `subject`, `chapter`, `language`, `q`) |
 | GET | `/api/resources/:id/` | One published note |
 | GET | `/api/resources/:id/file/` | Opens the PDF; `?download=1` saves it |

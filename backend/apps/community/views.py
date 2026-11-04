@@ -6,6 +6,9 @@ from rest_framework.exceptions import NotFound, PermissionDenied, ValidationErro
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.notifications.models import Notification
+from apps.notifications.services import notify
+
 from .models import Comment, Post, PostReport, Reaction
 from .serializers import CommentSerializer, CreatePostSerializer, PostReportSerializer, PostSerializer, ReactSerializer
 
@@ -83,6 +86,13 @@ def visible_post(post_id) -> Post:
 
 
 class PostDetailView(APIView):
+    @extend_schema(responses=PostSerializer)
+    def get(self, request, post_id):
+        """One post, for opening it directly from a notification."""
+        if not feed_queryset(request.user).filter(pk=post_id).exists():
+            raise NotFound('This post is no longer available.')
+        return Response(serialize(request, post_id))
+
     @extend_schema(request=None, responses={204: None})
     def delete(self, request, post_id):
         """Authors can delete their own posts; staff can delete any. Reshares keep a 'removed' card."""
@@ -113,6 +123,7 @@ class ReshareView(APIView):
                 post = Post.objects.create(
                     author=request.user, body=serializer.validated_data['body'], reshare_of=original, is_reshare=True
                 )
+                notify(Notification.Kind.RESHARE, request.user, original.author_id, original)
         except IntegrityError:
             raise ValidationError({'detail': 'You have already reshared this post.'})
         return Response(serialize(request, post.id), status=status.HTTP_201_CREATED)
@@ -125,7 +136,9 @@ class ReactView(APIView):
         post = visible_post(post_id)
         serializer = ReactSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        Reaction.objects.update_or_create(post=post, user=request.user, defaults={'kind': serializer.validated_data['kind']})
+        with transaction.atomic():
+            Reaction.objects.update_or_create(post=post, user=request.user, defaults={'kind': serializer.validated_data['kind']})
+            notify(Notification.Kind.REACTION, request.user, post.author_id, post)
         return Response(serialize(request, post.id))
 
     @extend_schema(request=None, responses=PostSerializer)
@@ -166,7 +179,7 @@ class CommentsView(APIView):
         post = visible_post(post_id)
         comments = (
             post.comments.filter(is_hidden=False, author__is_active=True)
-            .select_related('author__profile', 'post')
+            .select_related('author__profile', 'post', 'parent__author__profile')
             .order_by('-id')[:MAX_COMMENTS]
         )
         return Response(CommentSerializer(list(reversed(list(comments))), many=True, context={'request': request}).data)
@@ -177,7 +190,15 @@ class CommentsView(APIView):
         post = visible_post(post_id)
         serializer = CommentSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        comment = serializer.save(post=post, author=request.user)
+        parent = serializer.validated_data.get('parent')
+        if parent is not None and parent.post_id != post.id:
+            raise ValidationError({'parentId': ['You can only reply to a comment on this post.']})
+        with transaction.atomic():
+            comment = serializer.save(post=post, author=request.user)
+            if parent is not None:
+                notify(Notification.Kind.REPLY, request.user, parent.author_id, post, comment)
+            if parent is None or parent.author_id != post.author_id:
+                notify(Notification.Kind.COMMENT, request.user, post.author_id, post, comment)
         return Response(CommentSerializer(comment, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 

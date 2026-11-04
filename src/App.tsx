@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, type ReactNode } from 'react';
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { MotionConfig } from 'motion/react';
 import { CloudOff } from 'lucide-react';
@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/features/auth/AuthContext';
 import { ProfileProvider, useProfile } from '@/features/profile/ProfileContext';
 import { PlannerProvider } from '@/features/planner/PlannerContext';
 import { FocusProvider } from '@/features/focus/FocusContext';
+import { NotificationsProvider } from '@/features/notifications/NotificationsContext';
 import { AppShell } from '@/layouts/AppShell';
 import { Logo } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
@@ -26,9 +27,46 @@ const FocusPage = lazy(() => import('@/pages/FocusPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const MentorshipPage = lazy(() => import('@/pages/MentorshipPage'));
 const CommunityPage = lazy(() => import('@/pages/CommunityPage'));
+const PostPage = lazy(() => import('@/pages/CommunityPage').then((m) => ({ default: m.PostPage })));
+const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'));
 const MentorProfilePage = lazy(() => import('@/pages/MentorProfilePage'));
 const MentorSchedulePage = lazy(() => import('@/pages/MentorSchedulePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+
+/* index.html holds the public homepage as real HTML, so search engines can read it and it opens
+   instantly even while the free server is asleep. It stays hidden while `app-route` is on <html>;
+   the script in index.html sets that up before the first paint, using this same key. */
+const SESSION_HINT = 'crackroom-signed-in';
+
+function hadSession() {
+  try {
+    return localStorage.getItem(SESSION_HINT) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function rememberSession(signedIn: boolean) {
+  try {
+    if (signedIn) localStorage.setItem(SESSION_HINT, '1');
+    else localStorage.removeItem(SESSION_HINT);
+  } catch {
+    /* Without storage, a signed-in student just sees the homepage briefly on the way in. */
+  }
+}
+
+// The device-only prototype has no accounts, so it goes straight into the app.
+if (USING_SAMPLE_DATA) document.documentElement.classList.add('app-route');
+
+/** Shows the homepage from index.html for as long as this is mounted. */
+function GuestHomepage() {
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('app-route');
+    return () => root.classList.add('app-route');
+  }, []);
+  return null;
+}
 
 function Splash() {
   return (
@@ -63,11 +101,16 @@ function ServerUnreachable() {
 function RequireAccount() {
   const { status } = useAuth();
   const location = useLocation();
+  useEffect(() => {
+    if (status === 'signedIn') rememberSession(true);
+    if (status === 'signedOut') rememberSession(false);
+  }, [status]);
+  const guestAtHome = location.pathname === '/' && (status === 'signedOut' || ((status === 'loading' || status === 'unreachable') && !hadSession()));
+  if (guestAtHome) return <GuestHomepage />;
   if (status === 'loading') return <Splash />;
   if (status === 'unreachable') return <ServerUnreachable />;
   if (status === 'signedOut') {
-    const next = location.pathname === '/' ? '' : `?next=${encodeURIComponent(location.pathname + location.search)}`;
-    return <Navigate to={`/signin${next}`} replace />;
+    return <Navigate to={`/signin?next=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   }
   return <Outlet />;
 }
@@ -95,7 +138,9 @@ function StudyProviders({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   return (
     <PlannerProvider key={user?.email ?? 'local'}>
-      <FocusProvider>{children}</FocusProvider>
+      <FocusProvider>
+        <NotificationsProvider>{children}</NotificationsProvider>
+      </FocusProvider>
     </PlannerProvider>
   );
 }
@@ -137,6 +182,8 @@ export function App() {
                       <Route path="progress" element={<Lazy><ProgressPage /></Lazy>} />
                       <Route path="focus" element={<Lazy><FocusPage /></Lazy>} />
                       <Route path="community" element={<Lazy><CommunityPage /></Lazy>} />
+                      <Route path="community/posts/:postId" element={<Lazy><PostPage /></Lazy>} />
+                      <Route path="notifications" element={<Lazy><NotificationsPage /></Lazy>} />
                       <Route path="mentorship" element={<Lazy><MentorshipPage /></Lazy>} />
                       <Route path="mentorship/schedule" element={<Lazy><MentorSchedulePage /></Lazy>} />
                       <Route path="mentorship/:mentorId" element={<Lazy><MentorProfilePage /></Lazy>} />

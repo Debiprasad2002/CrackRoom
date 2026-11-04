@@ -14,10 +14,10 @@ export const LEVELS: { value: Level; label: string; description: string }[] = [
 
 /** `color` is the chart/mark colour; `tile` styles an icon tile. Text never takes the subject colour. */
 export const SUBJECTS: Record<Subject, { label: string; short: string; color: string; dot: string; tile: string }> = {
-  physics: { label: 'Physics', short: 'Phy', color: '#169CB8', dot: 'bg-subj-phy', tile: 'border-subj-phy/30 bg-subj-phy/10 text-[#0E7490]' },
-  chemistry: { label: 'Chemistry', short: 'Chem', color: '#C4861A', dot: 'bg-subj-chem', tile: 'border-subj-chem/30 bg-subj-chem/10 text-[#92400E]' },
+  physics: { label: 'Physics', short: 'Phy', color: '#169CB8', dot: 'bg-subj-phy', tile: 'border-subj-phy/30 bg-subj-phy/10 text-[#0E7490] dark:text-[#67E8F9]' },
+  chemistry: { label: 'Chemistry', short: 'Chem', color: '#C4861A', dot: 'bg-subj-chem', tile: 'border-subj-chem/30 bg-subj-chem/10 text-[#92400E] dark:text-[#FCD34D]' },
   mathematics: { label: 'Mathematics', short: 'Maths', color: '#8B5CF6', dot: 'bg-subj-math', tile: 'border-subj-math/35 bg-subj-math/10 text-violet-300' },
-  biology: { label: 'Biology', short: 'Bio', color: '#D9608F', dot: 'bg-subj-bio', tile: 'border-subj-bio/30 bg-subj-bio/10 text-[#BE185D]' },
+  biology: { label: 'Biology', short: 'Bio', color: '#D9608F', dot: 'bg-subj-bio', tile: 'border-subj-bio/30 bg-subj-bio/10 text-[#BE185D] dark:text-[#F9A8D4]' },
 };
 
 export const MIXED_TILE = 'border-line-strong bg-ink-700 text-fg-muted';
