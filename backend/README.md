@@ -135,26 +135,28 @@ Booking rules are enforced on the server:
 
 | Part | Service | Free tier notes |
 |---|---|---|
-| Frontend | Vercel | `vercel.json` proxies `/api/*` to Render and serves the SPA |
-| API and sockets | Render web service | Sleeps after 15 idle minutes; the first request then takes 30–60 s |
+| Frontend | Vercel | Serves the site and proxies `/api/*` to Render. The Hobby plan is for non-commercial use; move to Pro once you charge money |
+| API and sockets | Render web service | Sleeps after 15 idle minutes; waking takes about a minute. No shell, so the build creates the admin |
 | Database | Supabase (Postgres only) | 500 MB; the project pauses after a week without activity |
-| PDFs | Cloudflare R2 | 10 GB, no egress fees |
+| PDFs (optional) | Cloudflare R2 | 10 GB, no egress fees; may ask for a card to enable |
 | Sign-in | Google Identity Services | Free |
 
-1. **Supabase:** create a project in the Mumbai region. Copy the **Session pooler** connection string from Connect → Session pooler (Render's free tier has no IPv6). Add `?sslmode=require`.
-2. **R2:** create a private bucket (for example `crackroom-notes`). Create an R2 API token with *Object Read & Write* on that bucket only.
-3. **Google:** in Google Cloud Console, add `https://<your-app>.vercel.app` (and your own domain, if any) to the OAuth client's authorised JavaScript origins, and publish the consent screen so any Google account can sign in.
-4. **Render:** New → Blueprint → select this repo. `render.yaml` creates `crackroom-api`, which runs Daphne. Fill in these variables (the build runs migrations):
+1. **Supabase:** create a project in the Mumbai region with a letters-and-numbers database password. Copy the **Session pooler** connection string from Connect (Render's free tier has no IPv6), fill in the password, and add `?sslmode=require`.
+2. **Vercel:** import the repo and deploy with no changes; `.env.production` and `vercel.json` already hold the settings. Note the site's address.
+3. **Render:** New → Blueprint → select this repo. `render.yaml` creates `crackroom-api`. Fill in:
 
    | Variable | Value |
    |---|---|
-   | `DATABASE_URL` | the Supabase Session pooler string from step 1 |
-   | `R2_*` | the four values from step 2 |
+   | `DATABASE_URL` | the string from step 1 |
    | `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://<your-app>.vercel.app` |
+   | `DJANGO_SUPERUSER_EMAIL` | your email, for signing in to admin |
+   | `DJANGO_SUPERUSER_PASSWORD` | a long password for admin |
 
-   `GOOGLE_CLIENT_ID` is already set in `render.yaml`. Then open the Render shell and run `python manage.py createsuperuser`.
-5. **Vercel:** import the repo and set `VITE_API_URL=/api` and `VITE_GOOGLE_CLIENT_ID`. If Render gave the service a URL other than `crackroom-api.onrender.com`, update `vercel.json`.
-6. **Keep it awake (optional):** a free cron pinger such as cron-job.org can hit `https://<your-app>.vercel.app/api/health/` every 10 minutes. That avoids cold starts and keeps Supabase from pausing.
+   The build runs migrations, creates the admin, and adds the public starter rooms. If Render gives the service an address other than `crackroom-api.onrender.com`, update `vercel.json` and push.
+4. **Google:** in Cloud Console, add `https://<your-app>.vercel.app` to the OAuth client's authorised JavaScript origins, and publish the consent screen so any Google account can sign in.
+5. **Keep it awake (optional):** a free cron pinger such as cron-job.org can hit `https://crackroom-api.onrender.com/api/health/` every 10 minutes. That avoids cold starts and keeps Supabase from pausing.
+
+**Notes PDFs:** Render's disk is wiped on every restart, so do not upload PDFs until R2 is set up. Create a private bucket and an R2 API token with *Object Read & Write* on that bucket, then add `R2_BUCKET`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` in Render's Environment tab.
 
 Sockets connect straight to Render (`wss://<service>.onrender.com`), because Vercel rewrites cannot carry WebSockets. The ticket endpoint tells the browser where to connect. It uses `RENDER_EXTERNAL_HOSTNAME` automatically; override it with `DJANGO_WEBSOCKET_PUBLIC_URL` on a custom domain.
 
