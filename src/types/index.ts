@@ -186,13 +186,15 @@ export interface MentorBooking {
   mentor: { id: string; name: string; headline: string; hue: number; isVerified: boolean };
   /** Only while the booking is active. */
   meetingUrl: string | null;
+  /** Whether Google sent a calendar invite to the student and mentor. */
+  inviteSent: boolean;
   canCancel: boolean;
   cancelledBy: '' | 'student' | 'mentor';
   createdAt: string;
 }
 
 export interface MentorOwnSlot extends MentorSlot {
-  booking: { id: number; studentName: string; studentHue: number | null; studentExam: string | null; topic: string } | null;
+  booking: { id: number; studentName: string; studentHue: number | null; studentExam: string | null; topic: string; meetingUrl: string | null; inviteSent: boolean } | null;
 }
 
 export interface MentorSelf {
@@ -248,13 +250,15 @@ export interface PostComment {
   replyToName: string | null;
 }
 
-export type NotificationKind = 'reply' | 'comment' | 'reaction' | 'reshare';
+export type NotificationKind = 'reply' | 'comment' | 'reaction' | 'reshare' | 'booking' | 'cancel';
 
 export interface AppNotification {
   id: number;
   kind: NotificationKind;
   actor: PostAuthor;
-  postId: number;
+  postId: number | null;
+  /** Where it leads, when it is not about a community post. */
+  link: string | null;
   commentId: number | null;
   preview: string;
   read: boolean;

@@ -22,8 +22,8 @@ def inbox(user):
     """This student's notifications, leaving out anything moderated or from a closed account."""
     return Notification.objects.filter(
         Q(comment__isnull=True) | Q(comment__is_hidden=False),
+        Q(post__isnull=True) | Q(post__is_hidden=False),
         recipient=user,
-        post__is_hidden=False,
         actor__is_active=True,
     )
 
@@ -40,7 +40,7 @@ class NotificationListView(APIView):
             if not before.isdigit():
                 raise ValidationError({'before': ['Must be a notification id.']})
             items = items.filter(id__lt=int(before))
-        page = list(items.select_related('actor__profile', 'post', 'comment').order_by('-id')[: PAGE + 1])
+        page = list(items.select_related('actor__profile', 'post', 'comment', 'booking__slot__mentor').order_by('-id')[: PAGE + 1])
         return Response({
             'results': NotificationSerializer(page[:PAGE], many=True, context={'request': request}).data,
             'unread': unread,

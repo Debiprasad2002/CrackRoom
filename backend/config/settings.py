@@ -187,6 +187,13 @@ RESOURCE_MAX_UPLOAD_MB = int(os.environ.get('RESOURCE_MAX_UPLOAD_MB', '25'))
 # The OAuth client ID is public (it is also in the frontend); there is no client secret here.
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 
+# Calendar invites and Meet links for mentorship, sent from one CrackRoom Google account.
+# Without these, bookings still work and use the mentor's own call link.
+GOOGLE_CALENDAR_CLIENT_ID = os.environ.get('GOOGLE_CALENDAR_CLIENT_ID', '')
+GOOGLE_CALENDAR_CLIENT_SECRET = os.environ.get('GOOGLE_CALENDAR_CLIENT_SECRET', '')
+# Tests must never send real invites.
+GOOGLE_CALENDAR_REFRESH_TOKEN = '' if 'test' in sys.argv else os.environ.get('GOOGLE_CALENDAR_REFRESH_TOKEN', '')
+
 # --- Sessions, cookies and security ------------------------------------------------
 SESSION_COOKIE_AGE = int(timedelta(days=30).total_seconds())
 SESSION_COOKIE_HTTPONLY = True

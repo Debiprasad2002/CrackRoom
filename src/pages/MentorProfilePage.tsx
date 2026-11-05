@@ -62,7 +62,7 @@ function MentorView({ mentor }: { mentor: MentorDetail }) {
         <section className="surface relative overflow-hidden p-6 sm:p-8 lg:col-start-1 lg:row-start-1">
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-44 [mask-image:linear-gradient(to_bottom,black_45%,transparent)]"
-            style={{ background: `linear-gradient(135deg, hsl(${mentor.hue} 85% 94%), hsl(${(mentor.hue + 50) % 360} 90% 95%) 60%, transparent)` }}
+            style={{ background: `linear-gradient(135deg, hsl(${mentor.hue} 85% var(--tint-lightness)), hsl(${(mentor.hue + 50) % 360} 90% var(--tint-lightness)) 60%, transparent)` }}
             aria-hidden
           />
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end">
@@ -185,7 +185,10 @@ function BookingPanel({ mentor }: { mentor: MentorDetail }) {
             </span>
             <p className="mt-4 text-lg font-semibold text-fg">You're booked</p>
             <p className="mt-1 text-sm text-fg-muted">
-              {whenLabel(booked.startsAt)} with {mentor.name}. The call link appears in Mentorship 10 minutes before the start.
+              {whenLabel(booked.startsAt)} with {mentor.name}.{' '}
+              {booked.inviteSent
+                ? 'A Google Calendar invite with the Meet link is on its way to your email. You can also join from Mentorship.'
+                : 'The call link appears in Mentorship 10 minutes before the start.'}
             </p>
             <div className="mt-5 flex flex-col gap-2">
               <Button onClick={() => downloadIcs(booked)}>

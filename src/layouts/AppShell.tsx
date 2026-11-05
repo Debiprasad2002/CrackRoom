@@ -11,6 +11,7 @@ import { FloatingTimer } from '@/features/focus/FloatingTimer';
 import { levelLabel } from '@/data/catalog';
 import { Card } from '@/components/ui/Layout';
 import { ErrorState, PageSkeleton } from '@/components/ui/Feedback';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useFocus } from '@/features/focus/FocusContext';
 import { usePlanner } from '@/features/planner/PlannerContext';
 import { LocalImportPrompt } from '@/features/sync/LocalImportPrompt';
@@ -309,7 +310,9 @@ export function AppShell() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.22, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <SyncedOutlet />
+            <ErrorBoundary key={pathname}>
+              <SyncedOutlet />
+            </ErrorBoundary>
           </motion.div>
         </main>
       </div>

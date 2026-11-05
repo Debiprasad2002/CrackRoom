@@ -14,11 +14,14 @@ class Notification(models.Model):
         COMMENT = 'comment', 'Commented on your post'
         REACTION = 'reaction', 'Reacted to your post'
         RESHARE = 'reshare', 'Reshared your post'
+        BOOKING = 'booking', 'Booked a session with you'
+        CANCEL = 'cancel', 'Cancelled your session'
 
     recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
     kind = models.CharField(max_length=8, choices=Kind.choices)
-    post = models.ForeignKey('community.Post', on_delete=models.CASCADE, related_name='+')
+    post = models.ForeignKey('community.Post', on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    booking = models.ForeignKey('mentorship.Booking', on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     comment = models.ForeignKey('community.Comment', on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     read_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

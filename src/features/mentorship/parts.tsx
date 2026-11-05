@@ -129,7 +129,7 @@ export function MentorCard({ mentor }: { mentor: Mentor }) {
     >
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-20 opacity-70"
-        style={{ background: `linear-gradient(180deg, hsl(${mentor.hue} 85% 96%), transparent)` }}
+        style={{ background: `linear-gradient(180deg, hsl(${mentor.hue} 85% var(--tint-lightness)), transparent)` }}
         aria-hidden
       />
       <div className="relative flex items-start gap-4">
@@ -203,6 +203,7 @@ export function BookingCard({ booking, now, onCancel }: { booking: MentorBooking
             {!cancelled && <span className="text-violet-300"> · {countdown(booking.startsAt, now)}</span>}
           </p>
           <p className="mt-1 line-clamp-1 text-xs text-fg-subtle">“{booking.topic}”</p>
+          {!cancelled && booking.inviteSent && <p className="mt-1 text-xs text-fg-muted">Google Calendar invite sent to your email.</p>}
           {cancelled && (
             <p className="mt-1 text-xs font-medium text-rose-400">Cancelled{booking.cancelledBy === 'mentor' ? ' by the mentor' : ''}</p>
           )}

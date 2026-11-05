@@ -5,6 +5,8 @@ from datetime import timedelta
 from django.db.models import Count, Exists, IntegerField, OuterRef, Q, Subquery
 from django.utils import timezone
 
+from apps.common.choices import Exam, Language, Subject
+
 from .models import Booking, Mentor, Slot
 
 BOOKING_LEAD = timedelta(minutes=30)  # A mentor needs a little notice.
@@ -13,6 +15,29 @@ MAX_UPCOMING_PER_STUDENT = 2
 BOOKING_WINDOW = timedelta(days=21)  # How far ahead students can see and book.
 SLOT_HORIZON = timedelta(days=60)  # How far ahead mentors can publish.
 JOIN_EARLY = timedelta(minutes=10)
+
+
+def clean_choices(value, choices) -> list[str]:
+    """
+    A mentor's exams, subjects or languages as a list of known values. Older records were typed
+    by hand in admin, and could hold a plain string, different capitals or an unknown value.
+    """
+    items = value.split(',') if isinstance(value, str) else value if isinstance(value, list) else []
+    known = {choice.lower(): choice for choice in choices.values}
+    cleaned = [known.get(str(item).strip().lower()) for item in items]
+    return list(dict.fromkeys(item for item in cleaned if item))
+
+
+def clean_exams(value) -> list[str]:
+    return clean_choices(value, Exam)
+
+
+def clean_subjects(value) -> list[str]:
+    return clean_choices(value, Subject)
+
+
+def clean_languages(value) -> list[str]:
+    return clean_choices(value, Language)
 
 
 def open_slots(now=None):

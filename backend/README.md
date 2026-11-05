@@ -123,10 +123,21 @@ Close codes: `4401` ticket invalid or expired (the client fetches a new one), `4
 
 ## Onboarding a mentor
 
-1. The mentor signs in to CrackRoom with Google once and finishes onboarding (choosing "Other" as their stage is fine).
-2. In admin, open **Mentorship → Mentors → Add**, pick their account, and fill in name, headline, bio, exams, subjects, languages and session length.
-3. Tick **Verified** after checking their background and results. Unverified mentors are listed without the tick.
-4. The mentor then opens **Mentorship → Your mentor schedule** to add their call link and publish times.
+1. In admin, open **Mentorship → Mentors → Add** and enter their Gmail, name, headline, bio, exams, subjects, languages and session length. They do not need to have signed in first.
+2. Tick **Verified** after checking their background and results. Unverified mentors are listed without the tick.
+3. Publish their times, either from the **Slots** section of the same admin page or by the mentor under **Mentorship → Your mentor schedule**. To use that page, they sign in with the same Gmail and finish onboarding (choosing "Other" as their stage is fine).
+
+### Calendar invites and Meet links
+
+Each booking creates a Google Calendar event with its own Meet link, from one CrackRoom Google account, and Google emails the invite to the student and mentor. Cancelling a booking cancels the event. Guests cannot see each other's email address.
+
+Setup, once:
+
+1. Create a Gmail for CrackRoom. In the CrackRoom Google Cloud project, enable the **Google Calendar API** and create an OAuth client of type **Desktop app**.
+2. Put its ID and secret in `backend/.env` as `GOOGLE_CALENDAR_CLIENT_ID` and `GOOGLE_CALENDAR_CLIENT_SECRET`, then run `python manage.py connect_google_calendar` and sign in with the CrackRoom Gmail.
+3. On Render, set `GOOGLE_CALENDAR_CLIENT_ID`, `GOOGLE_CALENDAR_CLIENT_SECRET` and the printed `GOOGLE_CALENDAR_REFRESH_TOKEN`.
+
+A booking never depends on Google. If an invite fails, the mentor's backup call link is used, the failure is logged, and staff can use **Retry Google Calendar invite** on the Bookings page in admin.
 
 Booking rules are enforced on the server:
 - At most one active booking per slot, guaranteed by a database constraint.

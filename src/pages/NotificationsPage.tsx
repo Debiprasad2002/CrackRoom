@@ -28,7 +28,7 @@ export default function NotificationsPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <PageHeader
         title="Notifications"
-        description="Replies, comments, reactions and reshares from other students."
+        description="Replies, reactions and reshares from other students, and your mentorship sessions."
         actions={
           unread > 0 ? (
             <Button variant="secondary" onClick={() => run(markAllRead, 'Could not mark as read')}>

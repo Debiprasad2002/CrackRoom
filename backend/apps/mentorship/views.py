@@ -9,12 +9,18 @@ from rest_framework.exceptions import NotFound, PermissionDenied, ValidationErro
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.notifications.models import Notification
+from apps.notifications.services import notify
+
+from . import google_calendar
 from .models import Booking, Mentor, Slot
 from .rules import (
     BOOKING_LEAD,
     MAX_UPCOMING_PER_STUDENT,
     SLOT_HORIZON,
     annotated_mentors,
+    clean_exams,
+    clean_subjects,
     open_slots,
     overlaps,
     student_can_cancel,
@@ -49,9 +55,9 @@ class MentorViewSet(viewsets.ReadOnlyModelViewSet):
         exam, subject = request.query_params.get('exam'), request.query_params.get('subject')
         # Lists are tiny JSON arrays; filtering here works the same on SQLite and Postgres.
         if exam:
-            mentors = [m for m in mentors if exam in m.exams]
+            mentors = [m for m in mentors if exam in clean_exams(m.exams)]
         if subject:
-            mentors = [m for m in mentors if subject in m.subjects]
+            mentors = [m for m in mentors if subject in clean_subjects(m.subjects)]
         return Response(MentorCardSerializer(mentors, many=True).data)
 
     @extend_schema(responses=MentorDetailSerializer)
@@ -92,8 +98,11 @@ class BookSlotView(APIView):
                 if upcoming.filter(slot__mentor=slot.mentor).exists():
                     raise ValidationError({'detail': 'You already have an upcoming session with this mentor.'})
                 booking = Booking.objects.create(slot=slot, student=user, topic=serializer.validated_data['topic'])
+                notify(Notification.Kind.BOOKING, user, slot.mentor.user_id, booking=booking)
         except IntegrityError:
             raise ValidationError({'detail': 'Someone just booked this slot. Pick another time.'})
+        # Outside the transaction: a slow or failing Google must not hold the slot lock or undo the booking.
+        google_calendar.send_invite(booking)
         return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED)
 
 
@@ -121,7 +130,10 @@ class CancelBookingView(APIView):
         booking.status = Booking.Status.CANCELLED
         booking.cancelled_by = Booking.CancelledBy.STUDENT
         booking.cancelled_at = timezone.now()
-        booking.save(update_fields=['status', 'cancelled_by', 'cancelled_at'])
+        with transaction.atomic():
+            booking.save(update_fields=['status', 'cancelled_by', 'cancelled_at'])
+            notify(Notification.Kind.CANCEL, request.user, booking.slot.mentor.user_id, booking=booking)
+        google_calendar.cancel_invite(booking)
         return Response(BookingSerializer(booking).data)
 
 
@@ -193,10 +205,15 @@ class MentorSlotDetailView(APIView):
             raise NotFound('Slot not found.')
         if slot.starts_at <= timezone.now():
             raise ValidationError({'detail': 'This session has already started.'})
+        active = list(slot.bookings.filter(status=Booking.Status.BOOKED))
         with transaction.atomic():
             slot.bookings.filter(status=Booking.Status.BOOKED).update(
                 status=Booking.Status.CANCELLED, cancelled_by=Booking.CancelledBy.MENTOR, cancelled_at=timezone.now()
             )
             slot.is_cancelled = True
             slot.save(update_fields=['is_cancelled'])
+            for booking in active:
+                notify(Notification.Kind.CANCEL, request.user, booking.student_id, booking=booking)
+        for booking in active:
+            google_calendar.cancel_invite(booking)
         return Response(status=status.HTTP_204_NO_CONTENT)

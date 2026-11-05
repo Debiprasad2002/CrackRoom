@@ -276,7 +276,7 @@ function HowItWorks() {
   const steps = [
     { icon: Users, title: 'Pick a mentor', text: 'Filter by exam and subject. Verified mentors carry the violet tick.' },
     { icon: CalendarCheck, title: 'Book a slot', text: 'Choose a time and tell them what you want to work on.' },
-    { icon: Video, title: 'Meet 1:1', text: 'Join the private call from here. It opens 10 minutes early.' },
+    { icon: Video, title: 'Meet 1:1', text: 'You both get a Google Calendar invite by email. You can also join from here, from 10 minutes before.' },
   ];
   return (
     <section aria-labelledby="how-mentorship-works">

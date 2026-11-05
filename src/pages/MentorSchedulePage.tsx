@@ -235,6 +235,11 @@ function Upcoming({ slots, onRemoved }: { slots: MentorOwnSlot[]; onRemoved: (id
                             {s.booking.studentExam && <span className="font-normal text-fg-subtle"> · {s.booking.studentExam}</span>}
                           </p>
                           <p className="line-clamp-2 text-xs text-fg-muted">“{s.booking.topic}”</p>
+                          {s.booking.meetingUrl && (
+                            <a href={s.booking.meetingUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex min-h-8 items-center text-xs font-semibold text-violet-300 hover:text-violet-700">
+                              {s.booking.inviteSent ? 'Open Meet link (also in your calendar invite)' : 'Open your call link'}
+                            </a>
+                          )}
                         </div>
                       </div>
                     ) : (
@@ -312,7 +317,7 @@ function ProfileForm({ mentor }: { mentor: MentorSelf }) {
             <Field label="About you" error={errors.bio}>
               {({ id, describedBy, invalid }) => <Textarea id={id} value={bio} maxLength={1200} onChange={(e) => setBio(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid} className="min-h-28" />}
             </Field>
-            <Field label="Meeting link" error={errors.meetingUrl} hint="Google Meet or Zoom. Only booked students see it.">
+            <Field label="Backup meeting link" error={errors.meetingUrl} hint="Each booking normally gets its own Meet link by email. This Google Meet or Zoom link is used only if that fails.">
               {({ id, describedBy, invalid }) => (
                 <Input id={id} type="url" inputMode="url" value={meetingUrl} onChange={(e) => setMeetingUrl(e.target.value)} placeholder="https://meet.google.com/…" aria-describedby={describedBy} aria-invalid={invalid} />
               )}

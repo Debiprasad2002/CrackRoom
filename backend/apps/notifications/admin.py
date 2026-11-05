@@ -7,5 +7,5 @@ from .models import Notification
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ['kind', 'recipient', 'actor', 'read_at', 'created_at']
     list_filter = ['kind']
-    raw_id_fields = ['recipient', 'actor', 'post', 'comment']
+    raw_id_fields = ['recipient', 'actor', 'post', 'comment', 'booking']
     date_hierarchy = 'created_at'

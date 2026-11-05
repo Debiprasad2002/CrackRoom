@@ -29,7 +29,7 @@ class Mentor(models.Model):
     languages = models.JSONField(default=list, help_text='e.g. ["English", "Hindi"].')
     session_minutes = models.PositiveSmallIntegerField(choices=Length.choices, default=Length.MIN_30)
     meeting_url = models.URLField(
-        blank=True, help_text='Google Meet or Zoom link. Only shown to students with a booking.'
+        blank=True, help_text='Backup Google Meet or Zoom link, used if a Google Calendar invite cannot be created. Only shown to students with a booking.'
     )
     avatar_hue = models.PositiveSmallIntegerField(default=262, validators=[MaxValueValidator(359)])
     is_verified = models.BooleanField(default=False, help_text='Staff checked their background and results.')
@@ -84,6 +84,8 @@ class Booking(models.Model):
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.BOOKED, db_index=True)
     cancelled_by = models.CharField(max_length=8, choices=CancelledBy.choices, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
+    calendar_event_id = models.CharField(max_length=64, blank=True, help_text='Empty means no Google Calendar invite was sent.')
+    meet_url = models.URLField(blank=True, help_text='The Meet link Google created for this session.')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

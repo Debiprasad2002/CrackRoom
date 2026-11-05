@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
-import { Flame, MessageCircle, Repeat2, Reply, X, type LucideIcon } from 'lucide-react';
+import { CalendarCheck, CalendarX2, Flame, MessageCircle, Repeat2, Reply, X, type LucideIcon } from 'lucide-react';
 import type { AppNotification, NotificationKind } from '@/types';
 import { notificationsService } from '@/services/notificationsService';
 import { USING_SAMPLE_DATA } from '@/services/config';
@@ -18,10 +18,12 @@ export const KIND: Record<NotificationKind, { text: string; icon: LucideIcon; ti
   comment: { text: 'commented on your post', icon: MessageCircle, tint: 'bg-cyan-600' },
   reaction: { text: 'reacted to your post', icon: Flame, tint: 'bg-orange-500' },
   reshare: { text: 'reshared your post', icon: Repeat2, tint: 'bg-emerald-600' },
+  booking: { text: 'booked a session with you', icon: CalendarCheck, tint: 'bg-violet-500' },
+  cancel: { text: 'cancelled your session', icon: CalendarX2, tint: 'bg-rose-600' },
 };
 
 export function notificationHref(item: AppNotification) {
-  return `/community/posts/${item.postId}${item.commentId ? `?comment=${item.commentId}` : ''}`;
+  return item.link ?? `/community/posts/${item.postId}${item.commentId ? `?comment=${item.commentId}` : ''}`;
 }
 
 /** The sender's avatar with a small badge saying what they did. */

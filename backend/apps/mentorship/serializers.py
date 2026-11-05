@@ -3,7 +3,18 @@ from rest_framework import serializers
 from apps.common.choices import Exam, Language, Subject
 
 from .models import Booking, Mentor, Slot
-from .rules import student_can_cancel
+from .rules import clean_exams, clean_languages, clean_subjects, student_can_cancel
+
+
+class CleanChoicesMixin:
+    """Whatever an older record holds, the app always receives proper lists."""
+
+    def to_representation(self, mentor):
+        # Cleaned first, because list fields fail on anything that is not a list. This is never saved.
+        mentor.exams = clean_exams(mentor.exams)
+        mentor.subjects = clean_subjects(mentor.subjects)
+        mentor.languages = clean_languages(mentor.languages)
+        return super().to_representation(mentor)
 
 
 class SlotSerializer(serializers.ModelSerializer):
@@ -14,7 +25,7 @@ class SlotSerializer(serializers.ModelSerializer):
         fields = ['id', 'startsAt', 'minutes']
 
 
-class MentorCardSerializer(serializers.ModelSerializer):
+class MentorCardSerializer(CleanChoicesMixin, serializers.ModelSerializer):
     """The public face of a mentor. Never includes the meeting link or account details."""
 
     id = serializers.CharField(source='slug')
@@ -62,6 +73,11 @@ class BookSerializer(serializers.Serializer):
         return value
 
 
+def call_link(booking) -> str | None:
+    """The session's own Meet link, or the mentor's backup link if Google could not create one."""
+    return booking.meet_url or booking.slot.mentor.meeting_url or None
+
+
 class BookingSerializer(serializers.ModelSerializer):
     """A booking as the student sees it. The call link appears only while the booking is active."""
 
@@ -69,13 +85,14 @@ class BookingSerializer(serializers.ModelSerializer):
     minutes = serializers.IntegerField(source='slot.minutes')
     mentor = serializers.SerializerMethodField()
     meetingUrl = serializers.SerializerMethodField()
+    inviteSent = serializers.SerializerMethodField()
     canCancel = serializers.SerializerMethodField()
     cancelledBy = serializers.CharField(source='cancelled_by')
     createdAt = serializers.DateTimeField(source='created_at')
 
     class Meta:
         model = Booking
-        fields = ['id', 'status', 'topic', 'startsAt', 'minutes', 'mentor', 'meetingUrl', 'canCancel', 'cancelledBy', 'createdAt']
+        fields = ['id', 'status', 'topic', 'startsAt', 'minutes', 'mentor', 'meetingUrl', 'inviteSent', 'canCancel', 'cancelledBy', 'createdAt']
 
     def get_mentor(self, booking) -> dict:
         m = booking.slot.mentor
@@ -84,7 +101,10 @@ class BookingSerializer(serializers.ModelSerializer):
     def get_meetingUrl(self, booking) -> str | None:
         if booking.status != Booking.Status.BOOKED:
             return None
-        return booking.slot.mentor.meeting_url or None
+        return call_link(booking)
+
+    def get_inviteSent(self, booking) -> bool:
+        return bool(booking.calendar_event_id)
 
     def get_canCancel(self, booking) -> bool:
         return student_can_cancel(booking)
@@ -111,10 +131,12 @@ class MentorSlotSerializer(serializers.ModelSerializer):
             'studentHue': profile.avatar_hue if profile else None,
             'studentExam': f'{profile.exam} {profile.target_year}' if profile else None,
             'topic': booking.topic,
+            'meetingUrl': call_link(booking),
+            'inviteSent': bool(booking.calendar_event_id),
         }
 
 
-class MentorSelfSerializer(serializers.ModelSerializer):
+class MentorSelfSerializer(CleanChoicesMixin, serializers.ModelSerializer):
     """What a mentor can edit about themselves. Verification stays with staff."""
 
     id = serializers.CharField(source='slug', read_only=True)
