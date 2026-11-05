@@ -37,9 +37,7 @@ class Command(BaseCommand):
         self.stdout.write(f'If no browser opens, visit:\n{url}\n')
         webbrowser.open(url)
 
-        params = self._wait_for_google()
-        if params.get('state') != state:
-            raise CommandError('The answer did not match this request. Please run the command again.')
+        params = self._wait_for_google(state)
         if 'code' not in params:
             raise CommandError(f'Google did not give access: {params.get("error", "unknown error")}.')
 
@@ -58,20 +56,36 @@ class Command(BaseCommand):
         self.stdout.write(f'\n{token}\n')
         self.stdout.write('Treat it like a password: it goes only into Render, never into chat or Git.')
 
-    def _wait_for_google(self) -> dict:
+    def _wait_for_google(self, state: str) -> dict:
+        """Waits for Google's reply to this run, ignoring stray requests such as old tabs or the browser's icon request."""
         received = {}
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_GET(self):
-                received.update(urllib.parse.parse_qsl(urllib.parse.urlparse(self.path).query))
-                self.send_response(200)
+                params = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(self.path).query))
+                matched = params.get('state') == state
+                if matched:
+                    received.update(params)
+                self.send_response(200 if matched else 404)
                 self.send_header('Content-Type', 'text/plain; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(b'CrackRoom is connected. You can close this tab and go back to the terminal.')
+                self.wfile.write(
+                    b'Done. You can close this tab and go back to the terminal.' if matched
+                    else b'This is not the current sign-in. Use the link printed by the latest command.'
+                )
 
             def log_message(self, *args):
                 pass
 
-        with http.server.HTTPServer(('localhost', PORT), Handler) as server:
-            server.handle_request()
+        class Server(http.server.HTTPServer):
+            # Windows otherwise lets an old, forgotten run share this port and take the reply.
+            allow_reuse_address = False
+
+        try:
+            server = Server(('localhost', PORT), Handler)
+        except OSError:
+            raise CommandError(f'Port {PORT} is in use, probably by an earlier run of this command. Close that terminal and try again.')
+        with server:
+            while not received:
+                server.handle_request()
         return received

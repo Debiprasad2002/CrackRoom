@@ -178,14 +178,17 @@ function Rail() {
 
 function MobileTopBar() {
   const { profile } = useRequiredProfile();
+  const { timer } = useFocus();
   return (
     <header className="sticky top-0 z-30 border-b border-line/70 bg-ink-900/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl md:hidden">
-      <div className="flex h-14 items-center justify-between gap-3 px-4">
-        <Link to="/" className="-my-1 rounded-lg py-2" aria-label="CrackRoom home">
-          <Logo size="sm" />
+      <div className="flex h-14 items-center justify-between gap-2 px-3 min-[380px]:gap-3 min-[380px]:px-4">
+        <Link to="/" className="-my-1 min-w-0 rounded-lg py-2" aria-label="CrackRoom home">
+          {/* The name gives way on narrow phones, and to a running timer's wider pill, so every control stays on one line. */}
+          <Logo size="sm" textClassName={timer.status === 'idle' ? 'max-[379px]:sr-only' : 'max-[479px]:sr-only'} />
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-0.5 min-[380px]:gap-1">
           <TimerPill />
+          <ThemeToggle className="size-10 justify-center rounded-xl hover:bg-ink-700" />
           <Link to="/notifications" className="relative inline-flex size-10 items-center justify-center rounded-xl text-fg-muted hover:bg-ink-700 hover:text-fg" aria-label="Notifications">
             <Bell className="size-5" aria-hidden />
             <UnreadBadge className="absolute right-0 top-0" />

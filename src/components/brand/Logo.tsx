@@ -35,17 +35,19 @@ interface LogoProps {
   variant?: 'full' | 'mark';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  /** Extra classes for the name beside the mark, such as hiding it on narrow screens. */
+  textClassName?: string;
 }
 
 const dims = { sm: { mark: 28, text: 'text-[15px]' }, md: { mark: 32, text: 'text-[17px]' }, lg: { mark: 44, text: 'text-2xl' } };
 
-export function Logo({ variant = 'full', size = 'md', className }: LogoProps) {
+export function Logo({ variant = 'full', size = 'md', className, textClassName }: LogoProps) {
   const d = dims[size];
   return (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
       <LogoMark size={d.mark} />
       {variant === 'full' ? (
-        <span className={cn('font-display font-semibold tracking-tight text-fg', d.text)}>
+        <span className={cn('font-display font-semibold tracking-tight text-fg', d.text, textClassName)}>
           Crack<span className="text-violet-300">Room</span>
         </span>
       ) : (
