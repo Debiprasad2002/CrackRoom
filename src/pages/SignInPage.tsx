@@ -36,7 +36,7 @@ export default function SignInPage() {
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-mint-400" aria-hidden />
           <span>
             We only receive your name, email and Google account id. Your email is never shown to other students, and
-            there is no password to remember.
+            there is no password to remember. <a href="/privacy" className="font-medium text-violet-300 underline">Privacy Policy</a>
           </span>
         </p>
       }
