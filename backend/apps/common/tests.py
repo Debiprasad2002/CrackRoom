@@ -4,10 +4,21 @@ from unittest import mock
 
 from django.core.management import call_command
 from django.db import OperationalError
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 
 from apps.accounts.models import User
 from apps.rooms.models import Room
+
+
+class DatabaseTimeoutTests(SimpleTestCase):
+    def test_postgres_connections_cannot_hang_forever(self):
+        from django.conf import settings
+
+        options = settings.DATABASES['default'].get('OPTIONS', {})
+        if 'postgresql' not in settings.DATABASES['default']['ENGINE']:
+            self.skipTest('Only Postgres gets connection time limits.')
+        self.assertEqual(options['connect_timeout'], 10)
+        self.assertEqual(options['keepalives'], 1)
 
 
 class HealthCheckTests(TestCase):

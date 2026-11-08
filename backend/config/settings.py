@@ -107,6 +107,17 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
+if 'postgresql' in DATABASES['default']['ENGINE']:
+    # Every database request goes through one queue, so a connection that hangs would freeze
+    # the whole site. Give up on connecting after 10 seconds, and notice a dropped connection
+    # within about a minute. These are client-side settings, which Supabase's pooler accepts.
+    DATABASES['default'].setdefault('OPTIONS', {}).update(
+        connect_timeout=int(os.environ.get('DATABASE_CONNECT_TIMEOUT', '10')),
+        keepalives=1,
+        keepalives_idle=30,
+        keepalives_interval=10,
+        keepalives_count=3,
+    )
 
 # --- Real-time rooms -------------------------------------------------------------------
 # One server process can use the in-memory layer. Set REDIS_URL (e.g. Upstash free tier)
